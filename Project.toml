@@ -1,0 +1,10 @@
+name = "DN2"
+uuid = "c8c86ae3-985b-4a5d-9382-4844e3c570eb"
+authors = ["zgontimo99 <147942805+zgontimo99@users.noreply.github.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
+[compat]
+LinearAlgebra = "1.11.0"

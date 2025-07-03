@@ -10,8 +10,8 @@ module DN2
     # Multiply two polynomials (represented as coefficient arrays)
     function poly_mul(p, q)
         result = zeros(Float64, length(p) + length(q) - 1)
-        for i in 1:length(p)
-            for j in 1:length(q)
+        for i in eachindex(p)
+            for j in eachindex(q)
                 result[i + j - 1] += p[i] * q[j]
             end
         end
@@ -37,10 +37,10 @@ module DN2
     function poly_add(p, q)
         len = max(length(p), length(q))
         r = zeros(Float64, len)
-        for i in 1:length(p)
+        for i in eachindex(p)
             r[i] += p[i]
         end
-        for i in 1:length(q)
+        for i in eachindex(q)
             r[i] += q[i]
         end
         return r
@@ -73,39 +73,12 @@ module DN2
     # Integrate polynomial from 0 to 1
     function poly_integrate(p)
         s = 0.0
-        for i in 1:length(p)
+        for i in eachindex(p)
             s += p[i] / i
         end
         return s
     end
 
     export binom, poly_mul, bezier_polynomial, poly_add, poly_pow, poly_deriv, cross_term, poly_integrate
-
-    # Control points
-    control_pts = [
-        [0.0, 0.0],
-        [1.0, 1.0],
-        [2.0, 3.0],
-        [1.0, 4.0],
-        [0.0, 4.0],
-        [-1.0, 3.0],
-        [0.0, 1.0],
-        [1.0, 0.0]
-    ]
-
-    # Separate x and y control points
-    x_pts = [p[1] for p in control_pts]
-    y_pts = [p[2] for p in control_pts]
-
-    # Get Bézier polynomials for x(t) and y(t)
-    xpoly = bezier_polynomial(x_pts)
-    ypoly = bezier_polynomial(y_pts)
-
-    # Compute integrand x(t)*y'(t) - y(t)*x'(t)
-    area_poly = cross_term(xpoly, ypoly)
-
-    # Integrate from 0 to 1
-    area = 0.5 * poly_integrate(area_poly)
-    print(area)
 
 end 

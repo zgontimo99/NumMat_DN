@@ -1,4 +1,4 @@
-using DN3
+using DN3, Plots
 
 tspan = (0.0, 4.0)
 

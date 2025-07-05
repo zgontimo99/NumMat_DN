@@ -1,19 +1,12 @@
 module DN3
 
     using Plots
-    μ = 0.0123
-    # Define equations of motion for CR3BP in rotating frame
-    function cr3bp_derivatives(u, t)
-        x, y, z, vx, vy, vz = u
 
-        r1 = sqrt((x + μ)^2 + y^2 + z^2)
-        r2 = sqrt((x - 1 + μ)^2 + y^2 + z^2)
-
-        ax = -(1 - μ)*(x + μ)/r1^3 - μ*(x - 1 + μ)/r2^3
-        ay = -(1 - μ)*y/r1^3 - μ*y/r2^3
-        az = -(1 - μ)*z/r1^3 - μ*z/r2^3
-
-        return [vx, vy, vz, ax, ay, az]
+    function van_der_pol!(u, t)
+        x, v = u
+        dxdt = v
+        dvdt = 4 * (1 - x^2) * v - x
+        return [dxdt, dvdt]
     end
 
     function rk4(f, u0, tspan, dt)
@@ -36,6 +29,6 @@ module DN3
     end
 
 
-    export cr3bp_derivatives, rk4
+    export rk4, van_der_pol!
 
 end 

@@ -88,7 +88,7 @@ function vloži!(G, fix, točke)
     A = build_indexed_matrix(matrika(G, sprem))
     for k = 1:dim
         b = desne_strani(G, sprem, točke[k, :])
-        x = conj_grad(A, b) # matrika A je negativno definitna
+        x = conj_grad(A, b) 
         točke[k, sprem] = x
     end
 end

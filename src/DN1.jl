@@ -29,7 +29,7 @@ module DN1
 
     function conj_grad(A::RedkaMatrika, b::AbstractVector; tol=1e-8, maxiter=length(b))
         n = length(b)
-        x = zeros(eltype(b), n)
+        x = copy(b)
         r = b - A * x
         p = copy(r)
         rsold = dot(r, r)

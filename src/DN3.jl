@@ -28,7 +28,23 @@ module DN3
         return t, u
     end
 
+function find_upward_crossings(t, x, v)
+    crossings = Float64[]
 
-    export rk4, van_der_pol!
+    for i in 2:lastindex(x)
+        if x[i-1] < 0 && x[i] >= 0 && v[i] > 0
+            # Linear interpolation for better estimate:
+            t0, t1 = t[i-1], t[i]
+            x0, x1 = x[i-1], x[i]
+            # t_cross = t0 - x0 * (t1 - t0) / (x1 - x0)
+            t_cross = t0 + (0 - x0) * (t1 - t0) / (x1 - x0)
+            push!(crossings, t_cross)
+        end
+    end
+    return crossings
+end    
+
+
+    export rk4, van_der_pol!, find_upward_crossings
 
 end 

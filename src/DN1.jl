@@ -7,6 +7,10 @@ module DN1
         I::Matrix{Int}    # Column indices
     end
 
+    """
+    C = build_indexed_matrix(A::Matrix)
+    Sestavi redki matriki V in I iz matrike A.
+    """
     function build_indexed_matrix(A::Matrix)
         n, m = size(A)
         max_nnz_per_row = maximum(count(!iszero, A[i, :] ) for i in 1:n)
@@ -27,9 +31,16 @@ module DN1
         return RedkaMatrika(V, I)
     end
 
-    function conj_grad(A::RedkaMatrika, b::AbstractVector; tol=1e-8, maxiter=length(b))
+    """Metoda konjugiranih gradientov za reševanje sistema enačb `Ax = b`
+    s pozitivno definitno matriko `A`.
+    Metoda ne preverja, ali je argument `A` pozitivno definiten.
+    """
+    function conj_grad(A::RedkaMatrika, b::AbstractVector; tol=1e-8, maxiter=10*length(b))
         n = length(b)
         x = copy(b)
+        if A*b ≈ x
+            return x
+        end
         r = b - A * x
         p = copy(r)
         rsold = dot(r, r)
@@ -48,7 +59,7 @@ module DN1
             p = r + (rsnew / rsold) * p
             rsold = rsnew
         end
-    
+        println("Rezultat ni konvergiral!")
         return x  # If convergence not reached
     end
 

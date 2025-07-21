@@ -21,16 +21,23 @@ module DN2
     # Compute the polynomial representation of a Bézier component (x or y)
     function bezier_polynomial(control_points)
         n = length(control_points) - 1
-        poly = zeros(Float64, n + 1)
+        result = Float64[]  # dynamically sized polynomial
+
         for i in 0:n
             coeff = binom(n, i)
             # Bernstein basis: coeff * (1 - t)^(n - i) * t^i
-            basis = poly_mul([coeff], poly_pow([1.0, -1.0], n - i))  # (1 - t)^(n - i)
-            basis = poly_mul(basis, poly_pow([0.0, 1.0], i))         # t^i
-            basis .= basis .* control_points[i + 1]
-            poly = poly_add(poly, basis)
+            one_minus_t = [1.0, -1.0]    # (1 - t)
+            t_poly = [0.0, 1.0]          # t
+
+            basis = poly_pow(one_minus_t, n - i)
+            basis = poly_mul(basis, poly_pow(t_poly, i))
+            basis = coeff .* basis
+            basis = control_points[i + 1] .* basis
+
+            result = poly_add(result, basis)
         end
-        return poly
+
+        return result
     end
 
     # Add two polynomials
@@ -79,6 +86,23 @@ module DN2
         return s
     end
 
-    export binom, poly_mul, bezier_polynomial, poly_add, poly_pow, poly_deriv, cross_term, poly_integrate
+    function compute_area(control_pts)
+        # Separate x and y control points
+        x_pts = [p[1] for p in control_pts]
+        y_pts = [p[2] for p in control_pts]
+
+        # Get Bézier polynomials for x(t) and y(t)
+        xpoly = bezier_polynomial(x_pts)
+        ypoly = bezier_polynomial(y_pts)
+
+        # Compute integrand x(t)*y'(t) - y(t)*x'(t)
+        area_poly = cross_term(xpoly, ypoly)
+
+        # Integrate from 0 to 1
+        area = 0.5 * poly_integrate(area_poly)
+        return area
+    end
+
+    export binom, poly_mul, bezier_polynomial, poly_add, poly_pow, poly_deriv, cross_term, poly_integrate, compute_area
 
 end 

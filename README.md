@@ -8,11 +8,11 @@ Skripto lahko poženemo z ukazom:
 ```jl
 include("DN1/doc/DN1run.jl")
 ```
-v interaktivni zanki Julie.
+v interaktivni zanki Julie, potem ko smo ustrezno postavili paket v DN1.
 ## Testi
 Teste poženemo z ukazom:
 ```
-julia --project=Vaja01 -e "import Pkg; Pkg.test()"
+julia --project=DN1 -e "import Pkg; Pkg.test()"
 ```
 ## Poročilo PDF
 

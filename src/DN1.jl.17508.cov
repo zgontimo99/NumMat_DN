@@ -1,0 +1,101 @@
+        - module DN1
+        - 
+        -     using LinearAlgebra, Graphs, Plots
+        - 
+        -     struct RedkaMatrika{T}
+       10         V::Matrix{T}      # Values
+        -         I::Matrix{Int}    # Column indices
+        -     end
+        - 
+       10     function build_indexed_matrix(A::Matrix)
+       10         n, m = size(A)
+       20         max_nnz_per_row = maximum(count(!iszero, A[i, :] ) for i in 1:n)
+        -     
+       41         V = zeros(eltype(A), n, max_nnz_per_row)
+       41         I = zeros(Int, n, max_nnz_per_row)
+       10         for i in 1:n
+       28             k = 1
+       28             for j in 1:m
+       80                 if A[i, j] != 0
+       35                     V[i, k] = A[i, j]
+       35                     I[i, k] = j
+       35                     k += 1
+        -                 end
+      132             end
+       46         end
+        -     
+       10         return RedkaMatrika(V, I)
+        -     end
+        - 
+        8     function conj_grad(A::RedkaMatrika, b::AbstractVector; tol=1e-8, maxiter=10*length(b))
+        4         n = length(b)
+        4         x = copy(b)
+        4         if A*b ≈ x
+        1             return x
+        -         end
+        3         r = b - A * x
+        3         p = copy(r)
+        3         rsold = dot(r, r)
+        -     
+        3         for i in 1:maxiter
+       21             Ap = A * p
+       21             alpha = rsold / dot(p, Ap)
+       21             x += alpha * p
+       21             r -= alpha * Ap
+       21             rsnew = dot(r, r)
+        -     
+       21             if sqrt(rsnew) < tol
+        3                 return x
+        -             end
+        -     
+       18             p = r + (rsnew / rsold) * p
+       18             rsold = rsnew
+       36         end
+        0         println("Rezultat ni konvergiral!")
+        0         return x  # If convergence not reached
+        -     end
+        - 
+        -     import Base: getindex, setindex!, firstindex, lastindex, *
+        - 
+        8     function getindex(A::RedkaMatrika, i::Int, j::Int)
+       14         row_indices = A.I[i, :]
+       14         row_values = A.V[i, :]
+        8         for k in eachindex(row_indices)
+       12             if row_indices[k] == j
+        6                 return row_values[k]
+        -             end
+       10         end
+        2         return zero(eltype(A.V))  # Implicit zero for not-stored entries
+        -     end
+        - 
+        3     function setindex!(A::RedkaMatrika, val, i::Int, j::Int)
+        5         row_indices = A.I[i, :]
+        3         for k in eachindex(row_indices)
+        5             if row_indices[k] == j
+        2                 A.V[i, k] = val
+        2                 return A
+        -             end
+        5         end
+        1         error("Cannot insert new element at position ($i, $j): no slot reserved")
+        -     end
+        - 
+        -     firstindex(A::RedkaMatrika) = (1, 1)
+        -     lastindex(A::RedkaMatrika) = (size(A.V, 1), maximum(A.I))  # upper bound on columns
+        - 
+       30     function *(A::RedkaMatrika{T}, x::AbstractVector{T}) where T
+       30         n = size(A.V, 1)
+       90         result = zeros(T, n)
+       30         for i in 1:n
+       90             for k in 1:size(A.V, 2)
+      159                 col = A.I[i, k]
+      159                 if col == 0
+       24                     continue  # Skip unused slots
+        -                 end
+      135                 result[i] += A.V[i, k] * x[col]
+      231             end
+      150         end
+       30         return result
+        -     end
+        - 
+        -     export RedkaMatrika, build_indexed_matrix, conj_grad
+        - end

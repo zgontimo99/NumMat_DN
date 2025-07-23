@@ -7,7 +7,7 @@ using DN1, Test, LinearAlgebra
     @test size(indexed.V, 1) == 3
     @test indexed[1, 1] == 4.0
     @test indexed[1, 2] == 1.0
-    @test indexed[1, 3] == 0.0  # Not stored → should return 0
+    @test indexed[1, 3] == 0.0  
     @test indexed[3, 3] == 2.0
 end
 
@@ -19,7 +19,7 @@ end
     indexed[1, 3] = 9.0
     @test indexed[1, 3] == 9.0
 
-    @test_throws ErrorException indexed[1, 2] = 5.0  # index not stored
+    @test_throws ErrorException indexed[1, 2] = 5.0 
 end
 
 @testset "Matrix-Vector Multiplication" begin
@@ -40,21 +40,21 @@ end
 end
 
 @testset "Edge Cases" begin
-    # All-zero matrix
+    # Ničelna matrika
     A = zeros(3, 3)
     indexed = build_indexed_matrix(A)
     x = [1.0, 1.0, 1.0]
     result = indexed * x
     @test result == zeros(3)
 
-    # Identity matrix
+    # Identitata
     A = [1.0 0 0; 0.0 1.0 0.0; 0.0 0.0 1.0]
     b = [3.0, 2.0, 1.0]
     indexed = build_indexed_matrix(A)
     x = conj_grad(indexed, b)
     @test isapprox(x, b, atol=1e-8)
 
-    # Matrix with only one nonzero per row
+    # Matrika s samo eno neničelno vrednostjo na vrstico
     A = diagm([1.0, 2.0, 3.0])
     indexed = build_indexed_matrix(A)
     b = [1.0, 2.0, 3.0]

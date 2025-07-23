@@ -93,11 +93,12 @@ function vloži!(G, fix, točke)
     end
 end
 
-m, n = 6, 6
-G = Graphs.grid((m, n), periodic=false)
-# vogali imajo stopnjo 2
-vogali = filter(v -> degree(G, v) <= 2, vertices(G))
-točke = zeros(2, n * m)
-točke[:, vogali] = [0 0 1 1; 0 1 0 1]
-vloži!(G, vogali, točke)
+G = krožna_lestev(8)
+t = range(0, 2pi, 9)[1:end-1]
+x = cos.(t)
+y = sin.(t)
+točke = hcat(hcat(x, y)', zeros(2, 8))
+# funkcija hcat zloži vektorje po stolpcih v matriko
+fix = 1:8
+vloži!(G, fix, točke)
 graphplot(G, x=točke[1, :], y=točke[2, :], curves=false)

@@ -3,8 +3,8 @@ module DN1
     using LinearAlgebra, Graphs, Plots
 
     struct RedkaMatrika{T}
-        V::Matrix{T}      # Values
-        I::Matrix{Int}    # Column indices
+        V::Matrix{T}      # Vrednosti
+        I::Matrix{Int}    # Indeksi stolpcev
     end
 
     """
@@ -39,7 +39,7 @@ module DN1
         n = length(b)
         x = copy(b)
         if A*b ≈ x
-            return x
+            return x # če je A identiteta, je x = b
         end
         r = b - A * x
         p = copy(r)
@@ -60,7 +60,7 @@ module DN1
             rsold = rsnew
         end
         println("Rezultat ni konvergiral!")
-        return x  # If convergence not reached
+        return x  
     end
 
     import Base: getindex, setindex!, firstindex, lastindex, *
@@ -73,7 +73,7 @@ module DN1
                 return row_values[k]
             end
         end
-        return zero(eltype(A.V))  # Implicit zero for not-stored entries
+        return zero(eltype(A.V))  # Implicitna ničla za vredosti, ki niso shranjene
     end
 
     function setindex!(A::RedkaMatrika, val, i::Int, j::Int)
@@ -88,7 +88,7 @@ module DN1
     end
 
     firstindex(A::RedkaMatrika) = (1, 1)
-    lastindex(A::RedkaMatrika) = (size(A.V, 1), maximum(A.I))  # upper bound on columns
+    lastindex(A::RedkaMatrika) = (size(A.V, 1), maximum(A.I))  # gornja meja
 
     function *(A::RedkaMatrika{T}, x::AbstractVector{T}) where T
         n = size(A.V, 1)
@@ -97,7 +97,7 @@ module DN1
             for k in 1:size(A.V, 2)
                 col = A.I[i, k]
                 if col == 0
-                    continue  # Skip unused slots
+                    continue  # preskoči prazne indekse
                 end
                 result[i] += A.V[i, k] * x[col]
             end

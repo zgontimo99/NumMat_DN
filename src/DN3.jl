@@ -2,6 +2,8 @@ module DN3
 
     using Plots
 
+
+    """Definicija diferencialne enačbe za Van der Polov oscilator."""
     function van_der_pol!(u, t)
         x, v = u
         dxdt = v
@@ -9,6 +11,7 @@ module DN3
         return [dxdt, dvdt]
     end
 
+    """Metoda Runge-Kutta 4. reda za začetni problem funkcije f, z začetnimi pogoji u0, korakom dt in časovnim razponom tspan."""
     function rk4(f, u0, tspan, dt)
         t0, tf = tspan
         N = Int(floor((tf - t0) / dt))
@@ -28,21 +31,21 @@ module DN3
         return t, u
     end
 
-function find_upward_crossings(t, x, v)
-    crossings = Float64[]
+    """Poišče vse instance, kjer limitni cikel prečka točko nič."""
+    function find_upward_crossings(t, x, v)
+        crossings = Float64[]
 
-    for i in 2:lastindex(x)
-        if x[i-1] < 0 && x[i] >= 0 && v[i] > 0
-            # Linear interpolation for better estimate:
-            t0, t1 = t[i-1], t[i]
-            x0, x1 = x[i-1], x[i]
-            # t_cross = t0 - x0 * (t1 - t0) / (x1 - x0)
-            t_cross = t0 + (0 - x0) * (t1 - t0) / (x1 - x0)
-            push!(crossings, t_cross)
+        for i in 2:lastindex(x)
+            if x[i-1] < 0 && x[i] >= 0 && v[i] > 0
+                # Linearna interpolacija za boljšo oceno:
+                t0, t1 = t[i-1], t[i]
+                x0, x1 = x[i-1], x[i]
+                t_cross = t0 + (0 - x0) * (t1 - t0) / (x1 - x0)
+                push!(crossings, t_cross)
+            end
         end
-    end
-    return crossings
-end    
+        return crossings
+    end    
 
 
     export rk4, van_der_pol!, find_upward_crossings

@@ -1,8 +1,8 @@
 using DN3, Plots, Printf
 
-u0 = [1.0, 0.0]  # initial x and dx/dt
+u0 = [1.0, 0.0]  # začetna x in dx/dt
 dt = 1e-5
-tspan = (0.0, 100.0)  # Long enough to reach steady limit cycle
+tspan = (0.0, 100.0)  # Zagotovimo stabilen limitni cikel
 
 t, u = rk4(van_der_pol!, u0, tspan, dt)
 
@@ -13,7 +13,7 @@ crossings = find_upward_crossings(t, x, v)
 
 if length(crossings) ≥ 2
     period = crossings[end] - crossings[end - 1]
-    @printf("Estimated limit cycle period ≈ %.10f\n", period)
+    @printf("Ocenjena perioda limitnega cikla ≈ %.10f\n", period)
 else
-    println("Not enough crossings to estimate period.")
+    println("Premajhno število ciklov!")
 end

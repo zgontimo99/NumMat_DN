@@ -12,17 +12,4 @@ control_pts = [
     [1.0, 0.0]
 ]
 
-# Separate x and y control points
-x_pts = [p[1] for p in control_pts]
-y_pts = [p[2] for p in control_pts]
-
-# Get Bézier polynomials for x(t) and y(t)
-xpoly = bezier_polynomial(x_pts)
-ypoly = bezier_polynomial(y_pts)
-
-# Compute integrand x(t)*y'(t) - y(t)*x'(t)
-area_poly = cross_term(xpoly, ypoly)
-
-# Integrate from 0 to 1
-area = 0.5 * poly_integrate(area_poly)
-print(area)
+compute_area(control_pts)

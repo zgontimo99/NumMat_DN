@@ -12,4 +12,4 @@ control_pts = [
     [1.0, 0.0]
 ]
 
-compute_area(control_pts)
+compute_area_bezier(control_pts)
